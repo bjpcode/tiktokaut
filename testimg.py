@@ -12,7 +12,7 @@ def main():
             encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
 
         # Instantiate an authentication object. The Tencent Cloud account `secretId` and `secretKey` need to be replaced with your own.
-        cred = credential.Credential("AKIDW0HNErJXWGsHSs56sPltpX2KNE0Yrysc", "ax84mGVihRxFMJ2Yw85oLfldLuJWXN6c")
+        cred = credential.Credential("yourid", "yourkey")
 
         # Instantiate a client request profile and specify the endpoint.
         httpProfile = HttpProfile()
