@@ -22,8 +22,8 @@ except Exception as ex:
 
 VERSION = "0.0.1"
 
-AppID = 'AKIDW0HNErJXWGsHSs56sPltpX2KNE0Yrysc'
-AppKey = 'ax84mGVihRxFMJ2Yw85oLfldLuJWXN6c'
+AppID = 'your-id'
+AppKey = 'your-key'
 
 DEBUG_SWITCH = True
 FACE_PATH = 'face/'
