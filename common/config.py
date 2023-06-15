@@ -7,7 +7,10 @@ import sys
 import json
 import re
 
-from common.auto_adb import auto_adb
+try:
+    from common.auto_adb import auto_adb
+except ModuleNotFoundError:
+    from auto_adb import auto_adb
 
 adb = auto_adb()
 
@@ -50,4 +53,7 @@ def _get_screen_size():
     m = re.search(r'(\d+)x(\d+)', size_str)
     if m:
         return "{height}x{width}".format(height=m.group(2), width=m.group(1))
-    return "1920x1080"
+    return "2340x1080"
+
+if __name__ == "__main__":
+    print(_get_screen_size())

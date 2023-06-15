@@ -1,60 +1,45 @@
-#-*- coding: UTF-8 -*-
-import hashlib
-import urllib
-from urllib import parse
-import urllib.request
 import base64
 import json
-import time
-
-url_preffix='https://api.ai.qq.com/fcgi-bin/'
-
-
-def setParams(array, key, value):
-    array[key] = value
-
-
-def genSignString(parser):
-    uri_str = ''
-    for key in sorted(parser.keys()):
-        if key == 'app_key':
-            continue
-        uri_str += "%s=%s&" % (key, parse.quote(str(parser[key]), safe=''))
-    sign_str = uri_str + 'app_key=' + parser['app_key']
-
-    hash_md5 = hashlib.md5(sign_str.encode('utf-8'))
-    return hash_md5.hexdigest().upper()
+from tencentcloud.common import credential
+from tencentcloud.common.profile.client_profile import ClientProfile
+from tencentcloud.common.profile.http_profile import HttpProfile
+from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException
+from tencentcloud.iai.v20200303 import iai_client, models
 
 
 class AiPlat(object):
-    def __init__(self, app_id, app_key):
-        self.app_id = app_id
-        self.app_key = app_key
-        self.data = {}
-        self.url_data = ''
+    def __init__(self, secret_id, secret_key):
+        self.secret_id = secret_id
+        self.secret_key = secret_key
 
-    def invoke(self, params):
-        self.url_data = urllib.parse.urlencode(params).encode("utf-8")
-        req = urllib.request.Request(self.url, self.url_data)
+    def invoke_with_sdk(self, image_path):
         try:
-            rsp = urllib.request.urlopen(req)
-            str_rsp = rsp.read().decode('utf-8')
-            dict_rsp = json.loads(str_rsp)
-            return dict_rsp
-        except Exception as e:
-            print(e)
-            return {'ret': -1}
+            print("Invoking face detection with image:", image_path)  # add logging
 
-    def face_detectface(self, image, mode):
-        self.url = url_preffix + 'face/face_detectface'
-        setParams(self.data, 'app_id', self.app_id)
-        setParams(self.data, 'app_key', self.app_key)
-        setParams(self.data, 'mode', mode)
-        setParams(self.data, 'time_stamp', int(time.time()))
-        setParams(self.data, 'nonce_str', int(time.time()))
-        image_data = base64.b64encode(image)
-        setParams(self.data, 'image', image_data.decode("utf-8"))
-        sign_str = genSignString(self.data)
-        setParams(self.data, 'sign', sign_str)
-        return self.invoke(self.data)
+            with open(image_path, 'rb') as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode()
 
+            cred = credential.Credential(self.secret_id, self.secret_key)
+            httpProfile = HttpProfile()
+            httpProfile.endpoint = "iai.tencentcloudapi.com"
+
+            clientProfile = ClientProfile()
+            clientProfile.httpProfile = httpProfile
+            client = iai_client.IaiClient(cred, "ap-guangzhou", clientProfile)
+
+            req = models.DetectFaceRequest()
+            params = {
+                "Image": encoded_string,
+                "MaxFaceNum": 1,
+                "MinFaceSize": 40,  # You can adjust this value according to your requirement
+                "FaceModelVersion": "3.0",
+                "NeedFaceAttributes": 1,
+                "NeedQualityDetection": 1
+            }   
+            req.from_json_string(json.dumps(params))
+
+            resp = client.DetectFace(req)
+            return json.loads(resp.to_json_string())
+        except TencentCloudSDKException as err:
+            print(err)
+            return {'ret': -1, 'msg': str(err)}

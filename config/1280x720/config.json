@@ -1,5 +1,9 @@
-{
-  "center_point":{
+{ 
+  "ori_screen_size": {
+    "x": 1280,
+    "y": 720
+},
+"center_point":{
     "x": 333,
     "y": 700,
     "rx": 10,

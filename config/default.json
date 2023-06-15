@@ -1,4 +1,8 @@
 {
+  "ori_screen_size": {
+    "x": 2340,
+    "y": 1080
+},
   "center_point":{
     "x": 540,
     "y": 965,
