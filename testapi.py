@@ -9,7 +9,7 @@ def test_api_with_image(image_path):
     with open(image_path, 'rb') as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode()
 
-    cred = credential.Credential("AKIDW0HNErJXWGsHSs56sPltpX2KNE0Yrysc", "ax84mGVihRxFMJ2Yw85oLfldLuJWXN6c") 
+    cred = credential.Credential("yourid", "yourkey") 
     httpProfile = HttpProfile()
     httpProfile.endpoint = "iai.tencentcloudapi.com"
 
